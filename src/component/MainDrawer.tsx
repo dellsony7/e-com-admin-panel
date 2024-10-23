@@ -5,24 +5,17 @@ import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import PersonIcon from "@mui/icons-material/Person";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
-import CustomerTable from "./Customer/CustomerTable";
-import OrderTable from "./Orders/OrderTable";
-import ProductTable from "./Product/ProductTable";
-import ProductPage from "./Product/ProductPage";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import { Button, Stack } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -97,6 +90,10 @@ export default function MainDrawer() {
     setOpen(false);
   };
 
+  const location = useLocation();
+
+  console.log(location.pathname);
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -144,43 +141,66 @@ export default function MainDrawer() {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <PersonIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Customer"} />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <AddShoppingCartIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Product"} />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <ProductionQuantityLimitsIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Orders"} />
-            </ListItemButton>
-          </ListItem>
-        </List>
+        <Stack
+          spacing={2}
+          mt={2}
+          direction="column"
+          // alignItems={"flex-start"}
+          marginLeft={2}
+        >
+          <Button
+            disableElevation
+            variant={location.pathname === "/customer" ? "contained" : "text"}
+            color="primary"
+            fullWidth
+            startIcon={<PersonIcon />}
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+            }}
+          >
+            <Link to="/customer" style={{ textDecoration: "none" }}>
+              Customer
+            </Link>
+          </Button>
+
+          <Button
+            disableElevation
+            variant={location.pathname === "/product" ? "contained" : "text"}
+            color="primary"
+            fullWidth
+            startIcon={<AddShoppingCartIcon />}
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+            }}
+          >
+            <Link to="/product" style={{ textDecoration: "none" }}>
+              Product{" "}
+            </Link>
+          </Button>
+
+          <Button
+            disableElevation
+            variant={location.pathname === "/order" ? "contained" : "text"}
+            color="primary"
+            fullWidth
+            startIcon={<ProductionQuantityLimitsIcon />}
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+            }}
+          >
+            <Link to="/order" style={{ textDecoration: "none" }}>
+              Order
+            </Link>
+          </Button>
+        </Stack>
         <Divider />
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        {/* <CustomerTable /> */}
-
-        {/* <ProductTable /> */}
-
-        {/* <OrderTable /> */}
-
-        <ProductPage />
+        <Outlet />
       </Main>
     </Box>
   );
