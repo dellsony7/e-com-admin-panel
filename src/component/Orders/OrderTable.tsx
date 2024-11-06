@@ -32,7 +32,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function OrderTable() {
-  const [orderData, setOrderData] = useState<Order[]>([]);
+  const [orderData, setOrderData] = useState<Order[] | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
     undefined
   );
@@ -41,6 +41,22 @@ export default function OrderTable() {
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  // useEffect(() => {
+  //   console.log("[state]");
+  // }, [orderViewDialogOpen]);
+
+  // useEffect(() => {
+  //   console.log("[selectedOrder]");
+  // }, [selectedOrder]);
+
+  // useEffect(() => {
+  //   console.log("[selectedOrder]");
+  // }, [selectedOrder, orderViewDialogOpen]);
+
+  // useEffect(() => {
+  //   console.log("[always]");
+  // });
 
   // using fetch API to get orders data
   // const fetchOrders = async () => {
@@ -94,34 +110,42 @@ export default function OrderTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {orderData.map((order) => (
-              <StyledTableRow
-                key={order._id}
-                onClick={() => {
-                  setOrderViewDialogOpen(true);
-                  setSelectedOrder(order);
-                }}
-                sx={{
-                  "&:hover": {
-                    backgroundColor: "#f9f9f9",
-                    cursor: "pointer",
-                  },
-                }}
-              >
-                <StyledTableCell align="left">{order._id}</StyledTableCell>
-                <StyledTableCell align="left">
-                  {new Date(order.date).toLocaleDateString()}
+            {orderData === null ? (
+              <TableRow>
+                <StyledTableCell colSpan={4} align="center">
+                  Loading...
                 </StyledTableCell>
-                <StyledTableCell align="left">{`$${order.cost}`}</StyledTableCell>
-                <StyledTableCell align="left">
-                  {order.status ? (
-                    <Chip label="Completed" color="primary" />
-                  ) : (
-                    <Chip label="Pending" color="secondary" />
-                  )}
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
+              </TableRow>
+            ) : (
+              orderData.map((order) => (
+                <StyledTableRow
+                  key={order._id}
+                  onClick={() => {
+                    setOrderViewDialogOpen(true);
+                    setSelectedOrder(order);
+                  }}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "#f9f9f9",
+                      cursor: "pointer",
+                    },
+                  }}
+                >
+                  <StyledTableCell align="left">{order._id}</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {new Date(order.date).toLocaleDateString()}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">{`$${order.cost}`}</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {order.status ? (
+                      <Chip label="Completed" color="primary" />
+                    ) : (
+                      <Chip label="Pending" color="secondary" />
+                    )}
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

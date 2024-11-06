@@ -92,8 +92,6 @@ export default function MainDrawer() {
 
   const location = useLocation();
 
-  console.log(location.pathname);
-
   return (
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <CssBaseline />

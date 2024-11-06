@@ -130,7 +130,7 @@ export default function OrderViewDialog({
             </thead>
             <tbody>
               {order.products.map((product) => (
-                <tr key={product.id}>
+                <tr key={product.productId}>
                   <td>{product.name}</td>
                   <td>{product.quantity}</td>
                   <td>{product.price}</td>

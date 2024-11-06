@@ -8,7 +8,7 @@ interface Customer {
 }
 
 interface Product {
-  id: string;
+  productId: string;
   name: string;
   price: number;
   quantity: number;
