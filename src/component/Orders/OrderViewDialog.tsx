@@ -43,6 +43,7 @@ export default function OrderViewDialog({
     if (res === 200) {
       alert("Status Changed Successfully");
       onStatusChange();
+      // handleClose();
     } else {
       alert("Status Change Failed");
     }

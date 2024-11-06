@@ -33,7 +33,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function OrderTable() {
   const [orderData, setOrderData] = useState<Order[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
+    undefined
+  );
   const [orderViewDialogOpen, setOrderViewDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -57,6 +59,13 @@ export default function OrderTable() {
   const fetchOrders = async () => {
     const orders = await getOrderList();
     setOrderData(orders);
+
+    if (selectedOrder !== null) {
+      const updatedOrder = orders.find(
+        (order) => order._id === selectedOrder?._id
+      );
+      setSelectedOrder(updatedOrder);
+    }
   };
 
   return (
@@ -120,7 +129,10 @@ export default function OrderTable() {
       {orderViewDialogOpen && selectedOrder && (
         <OrderViewDialog
           open={orderViewDialogOpen}
-          handleClose={() => setOrderViewDialogOpen(false)}
+          handleClose={() => {
+            setSelectedOrder(undefined);
+            setOrderViewDialogOpen(false);
+          }}
           order={selectedOrder}
           onStatusChange={fetchOrders}
         />
