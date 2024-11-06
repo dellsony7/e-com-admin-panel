@@ -8,13 +8,15 @@ import { Alert, AlertTitle } from "@mui/material";
 interface DeleteConfirmationDialogProps {
   open: boolean;
   handleClose: () => void;
-  itemName?: string;
+  itemName?: string | number;
+  onConfirm?: () => void;
 }
 
 export default function DeleteConfirmationDialog({
   open,
   handleClose,
   itemName,
+  onConfirm,
 }: DeleteConfirmationDialogProps) {
   return (
     <React.Fragment>
@@ -38,7 +40,7 @@ export default function DeleteConfirmationDialog({
           <Button onClick={handleClose} variant="contained" color="inherit">
             Cancel{" "}
           </Button>
-          <Button onClick={handleClose} variant="contained" color="error">
+          <Button onClick={onConfirm} variant="contained" color="error">
             Delete{" "}
           </Button>
         </DialogActions>

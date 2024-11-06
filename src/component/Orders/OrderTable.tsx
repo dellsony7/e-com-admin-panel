@@ -8,6 +8,8 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Chip, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import OrderViewDialog from "./OrderViewDialog";
+import { getOrderList, Order } from "../../api/orderApi";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -29,45 +31,32 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-interface Customer {
-  id: string;
-  name: string;
-  email: string;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
-
-interface paymentData {
-  transactionId: string;
-  paymentMethod: string;
-}
-
-interface Order {
-  _id: number;
-  date: string;
-  cost: number;
-  customer: Customer;
-  products: Product[];
-  paymentData: paymentData;
-  status: boolean;
-}
-
 export default function OrderTable() {
   const [orderData, setOrderData] = useState<Order[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderViewDialogOpen, setOrderViewDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
+  // using fetch API to get orders data
+  // const fetchOrders = async () => {
+  //   const response = await fetch("http://localhost:3000/api/v1/orders");
+  //   const data = await response.json();
+  //   setOrderData(data);
+  // };
+
+  // using axios to get orders data
+  // const fetchOrders = async () => {
+  //   const response = await axios.get(`${ORDER_API_BASE_URL}/api/v1/orders`);
+  //   setOrderData(response.data);
+  // };
+
+  // using the orderApi.ts to get orders data
   const fetchOrders = async () => {
-    const response = await fetch("http://localhost:3000/api/v1/orders");
-    const data = await response.json();
-    setOrderData(data);
+    const orders = await getOrderList();
+    setOrderData(orders);
   };
 
   return (
@@ -75,44 +64,67 @@ export default function OrderTable() {
       <Typography variant="h4" gutterBottom component="div">
         Orders Table
       </Typography>
-      <div
+      {/* <div
         style={{
           maxHeight: "500px",
           overflowY: "scroll",
           width: "100%",
         }}
+      > */}
+      <TableContainer
+        component={Paper}
+        sx={{ maxHeight: 550, overflowY: "auto" }}
       >
-        <TableContainer component={Paper}>
-          <Table aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell align="left">Order Id</StyledTableCell>
-                <StyledTableCell align="left">Date</StyledTableCell>
-                <StyledTableCell align="left">Cost</StyledTableCell>
-                <StyledTableCell align="left">Status</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {orderData.map((order) => (
-                <StyledTableRow key={order._id}>
-                  <StyledTableCell align="left">{order._id}</StyledTableCell>
-                  <StyledTableCell align="left">
-                    {new Date(order.date).toLocaleDateString()}
-                  </StyledTableCell>
-                  <StyledTableCell align="left">{order.cost}</StyledTableCell>
-                  <StyledTableCell align="left">
-                    {order.status ? (
-                      <Chip label="Completed" color="primary" />
-                    ) : (
-                      <Chip label="Pending" color="secondary" />
-                    )}
-                  </StyledTableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>{" "}
-      </div>
+        <Table aria-label="customized table" stickyHeader>
+          <TableHead>
+            <TableRow>
+              <StyledTableCell align="left">Order Id</StyledTableCell>
+              <StyledTableCell align="left">Date</StyledTableCell>
+              <StyledTableCell align="left">Cost</StyledTableCell>
+              <StyledTableCell align="left">Status</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {orderData.map((order) => (
+              <StyledTableRow
+                key={order._id}
+                onClick={() => {
+                  setOrderViewDialogOpen(true);
+                  setSelectedOrder(order);
+                }}
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "#f9f9f9",
+                    cursor: "pointer",
+                  },
+                }}
+              >
+                <StyledTableCell align="left">{order._id}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {new Date(order.date).toLocaleDateString()}
+                </StyledTableCell>
+                <StyledTableCell align="left">{`$${order.cost}`}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {order.status ? (
+                    <Chip label="Completed" color="primary" />
+                  ) : (
+                    <Chip label="Pending" color="secondary" />
+                  )}
+                </StyledTableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {/* </div> */}
+      {orderViewDialogOpen && selectedOrder && (
+        <OrderViewDialog
+          open={orderViewDialogOpen}
+          handleClose={() => setOrderViewDialogOpen(false)}
+          order={selectedOrder}
+          onStatusChange={fetchOrders}
+        />
+      )}
     </>
   );
 }
