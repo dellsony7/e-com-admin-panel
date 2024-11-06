@@ -95,7 +95,7 @@ export default function MainDrawer() {
   console.log(location.pathname);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>

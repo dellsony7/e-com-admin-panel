@@ -6,7 +6,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Typography } from "@mui/material";
+import { Chip, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -28,40 +29,90 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(orderId: string, date: string, total: number) {
-  return { orderId, date, total };
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
 }
 
-const rows = [createData("OR-001", "2021-10-01", 1000)];
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+interface paymentData {
+  transactionId: string;
+  paymentMethod: string;
+}
+
+interface Order {
+  _id: number;
+  date: string;
+  cost: number;
+  customer: Customer;
+  products: Product[];
+  paymentData: paymentData;
+  status: boolean;
+}
 
 export default function OrderTable() {
+  const [orderData, setOrderData] = useState<Order[]>([]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    const response = await fetch("http://localhost:3000/api/v1/orders");
+    const data = await response.json();
+    setOrderData(data);
+  };
+
   return (
     <>
       <Typography variant="h4" gutterBottom component="div">
         Orders Table
       </Typography>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Order Id</StyledTableCell>
-              <StyledTableCell align="right">Date</StyledTableCell>
-              <StyledTableCell align="right">Total</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <StyledTableRow key={row.orderId}>
-                <StyledTableCell component="th" scope="row">
-                  {row.orderId}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.date}</StyledTableCell>
-                <StyledTableCell align="right">{row.total}</StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <div
+        style={{
+          maxHeight: "500px",
+          overflowY: "scroll",
+          width: "100%",
+        }}
+      >
+        <TableContainer component={Paper}>
+          <Table aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell align="left">Order Id</StyledTableCell>
+                <StyledTableCell align="left">Date</StyledTableCell>
+                <StyledTableCell align="left">Cost</StyledTableCell>
+                <StyledTableCell align="left">Status</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {orderData.map((order) => (
+                <StyledTableRow key={order._id}>
+                  <StyledTableCell align="left">{order._id}</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {new Date(order.date).toLocaleDateString()}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">{order.cost}</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {order.status ? (
+                      <Chip label="Completed" color="primary" />
+                    ) : (
+                      <Chip label="Pending" color="secondary" />
+                    )}
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>{" "}
+      </div>
     </>
   );
 }
